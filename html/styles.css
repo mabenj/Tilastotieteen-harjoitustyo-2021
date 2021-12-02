@@ -1,0 +1,40 @@
+body {
+	background-color: #fff;
+	color: #232629;
+	font-family: "Ubuntu", sans-serif;
+}
+
+p {
+	font-family: "Merriweather", serif;
+	/* font-family: "Ubuntu", sans-serif; */
+}
+
+ul.unstyled {
+	list-style-type: none;
+	padding: 0;
+}
+
+.container {
+	padding-right: 15px;
+	padding-left: 15px;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+@media (min-width: 768px) {
+	.container {
+		width: 750px;
+	}
+}
+
+@media (min-width: 992px) {
+	.container {
+		width: 970px;
+	}
+}
+
+@media (min-width: 1200px) {
+	.container {
+		width: 1170px;
+	}
+}

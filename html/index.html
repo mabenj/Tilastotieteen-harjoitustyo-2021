@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tilastotieteen harjoitustyö 2021</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="http://philarcher.org/css/numberheadings.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <main class="container">
+
+        <h1 class="nocount">Tilastotieteen harjoitustyö 2021</h1>
+        <strong>TILM3558</strong>
+        <ul class="unstyled">
+            <li>
+                Marko Järvinen
+            </li>
+            <li>
+                518467
+            </li>
+            <li>
+                mabeja@utu.fi
+            </li>
+        </ul>
+
+        <!-- ################## Numeeristen vastemuuttujien mallitus ############################## -->
+
+        <h2>Numeeristen vastemuuttujien mallitus</h2>
+        <ul class="unstyled">
+            <li>
+                <strong>
+                    <code>elinolo2020.sav</code> (Tilastokeskuksen elinolotutkimuksen aineisto, N=2199)
+                </strong>
+            </li>
+            <li>
+                <strong>Satunnaisotos (700 otosta) valittu käyttämällä opiskelijanumeroa siemenlukuna</strong>
+            </li>
+        </ul>
+
+        <h3>Varianssianalyysi</h3>
+        <p>
+            Tutki, onko sukupuolella ja asumisahtaudella yhteyttä asunnon pinta-alaan.
+        </p>
+
+        <h3>Regressiomalli</h3>
+        <p>
+            Tutki, onko kotitalouden kuluttajayksiköiden lukumäärällä, asumismenoilla yhteensä ja
+            alueella asumisajalla yhteyttä asunnon pinta-alaan.
+        </p>
+
+        <h3>Toistomittausmalli</h3>
+        <ul class="unstyled">
+            <li>
+                <strong>
+                    <code>Toistomittausaineisto2020.sav</code> (7 maasta kerätty aineisto potilaan ohjauksesta, N=1299)
+                </strong>
+            </li>
+            <li>
+                <strong>Satunnaisotos (600 otosta) valittu käyttämällä opiskelijanumeroa siemenlukuna</strong>
+            </li>
+        </ul>
+        <p>
+            <i>
+                Tutkijalla on hypoteesi, että potilaan mielestä saatu ohjaus leikkauksen jälkeen
+                toiminnallista seikoista (<code>Functional_M2</code>) on ollut vähäisempää kuin odotettu ennen
+                leikkausta (<code>Functional_M1</code>). Eli keskiarvo toisessa mittauksessa on matalampi. Lisäksi
+                kiinnostaa se, onko tuo ero mittausten välillä erilainen sukupuolittain.
+            </i>
+        </p>
+
+        <p>
+            Tutki saavatko nämä tutkimushypoteesit tukea mallittamalla aineisto toistettujen mittausten
+            varianssianalyysillä.
+        </p>
+
+        <i>
+            Huom. Numeeristen vastemuuttujien mallituksessa on varianssianalyysien
+            osalta tehtävä tarvittava kuvaileva tarkastelu ja regressiomallissa yhteyksien
+            suoraviivaisuuksien tarkastelu ja jäännöstarkastelu.
+        </i>
+
+        <!-- ################## Kategoristen vastemuuttujien mallitus ############################## -->
+
+        <h2>Kategoristen vastemuuttujien mallitus</h2>
+        <ul class="unstyled">
+            <li>
+                <strong><code>EK2011.sav</code> (eduskuntavaaliaineisto vuodelta 2011, N=1318)</strong>
+            </li>
+            <li>
+                <strong>Satunnaisotos (900 otosta) valittu käyttämällä opiskelijanumeroa siemenlukuna</strong>
+            </li>
+        </ul>
+
+        <h3>Muuttujien riippuvuusrakenne</h3>
+        <ol>
+            <li>
+                <p>
+                    Tarkastellaan muuttujia sukupuoli (<code>d2</code>), työttömyys viimeisen 12 kuukauden aikana
+                    (<code>k32</code>) ja oman sukupuolen 2011 eduskuntavaaleissa äänestäminen (<code>k23</code>). Tee
+                    ensin
+                    yksiulotteiset frekvenssijakaumat ja kolmen muuttujan ristiintaulu.
+                </p>
+                <p>
+                    Onko 3-ulotteisessa ristiintaulussa nollasoluja?
+                </p>
+            </li>
+
+            <li>
+                <p>
+                    Tarkastele kolmen muuttujan välisiä riippuvuuksia loglineaaristen mallien avulla. Ota
+                    mukaan muuttujista vain ne luokat, joissa havaintoja on yli 10.
+                </p>
+
+                <p>
+                    Millaiset riippuvuudet muuttujien välillä askeltavan menetelmän avulla valittuun malliin
+                    jäivät?
+                </p>
+
+                <p>
+                    Mikä on mallin generoiva luokka?
+                </p>
+
+                <p>
+                    Mikä on mallin yhteensopivuustestin p-arvo?
+                </p>
+
+                <p>
+                    Mikä on standardoitujen jäännösten vaihteluväli?
+                </p>
+            </li>
+
+            <li>
+                <p>
+                    Tee mallin mukainen yhteyksien jatkotarkastelu ristiintauluin ja tulkitse malli
+                    riviprosenttien avulla.
+                </p>
+            </li>
+        </ol>
+
+        <h3>Kaksiluokkainen selitettävä muuttuja</h3>
+        <ol>
+            <li>
+                <p>
+                    Tutki muuttujien sukupuoli (<code>d2</code>) ja ikä yhteyttä työttömyyteen viimeisen 12 kuukauden
+                    aikana (<code>k32</code>) käyttämällä logistista regressiomallia.
+                </p>
+            </li>
+
+            <li>
+                <p>
+                    Mitkä muuttujat selittävät työttömyyttä ?
+                </p>
+
+                <p>
+                    Tulkitse yhteydet OR:ien avulla. Raportoi myös luottamusvälit OR:ille
+                </p>
+
+                <p>
+                    Mikä on mallin <i>Nagelkerke</i> selitysaste ?
+                </p>
+            </li>
+        </ol>
+
+        <!-- ################## Monimuuttujamenetelmät ############################## -->
+
+        <h2>Monimuuttujamenetelmät</h2>
+        <ul class="unstyled">
+            <li>
+                <strong><code>pankkiotos2020.sav</code> (todellinen asiakasaineisto, N=2453)</strong>
+            </li>
+            <li>
+                <strong>Satunnaisotos (1500 otosta) valittu käyttämällä opiskelijanumeroa siemenlukuna</strong>
+            </li>
+        </ul>
+
+        <h3>Muuttujien ryhmittely</h3>
+        <ol>
+            <li>
+                <p>
+                    Muodosta pääkomponenttianalyysilla luokitelluista muuttujista (41 kpl:
+                    <code>autom_lainan_perinta_luok -
+                        kulutusluotot1_luok</code>) pääkomponentteja ominaisarvokriteerin
+                    mukaan. (Promax-rotaatio)
+                </p>
+            </li>
+
+            <li>
+                <p>
+                    Talleta havaintomatriisiin uusiksi muuttujiksi pääkomponenttipistemäärät.
+                </p>
+            </li>
+
+            <li>
+                <p>
+                    Nimeä uudet muuttujat (pääkomponentteihin latautuneiden muuttujien mukaisesti).
+                </p>
+            </li>
+        </ol>
+
+        <h4>Havaintojen ryhmittely</h4>
+        <ol start="4">
+            <li>
+                <p>
+                    Käytä näitä uusia muuttujia klusterianalyysissä, jossa muodostat asiakasryhmiä K-means
+                    menetelmällä lähtien kahdesta klusterista viiteen tai kuuteen klusteriin saakka. Kuvaile
+                    muodostamiasi ryhmiä.
+                </p>
+            </li>
+        </ol>
+
+    </main>
+</body>
+
+</html>
