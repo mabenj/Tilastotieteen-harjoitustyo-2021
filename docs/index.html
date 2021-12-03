@@ -17,6 +17,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
         rel="stylesheet">
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
 </head>
 
 <body>
@@ -39,52 +42,175 @@
         <!-- ################## Numeeristen vastemuuttujien mallitus ############################## -->
 
         <h2>Numeeristen vastemuuttujien mallitus</h2>
-        <ul class="unstyled">
-            <li>
-                <strong>
-                    <code>elinolo2020.sav</code> (Tilastokeskuksen elinolotutkimuksen aineisto, N=2199)
-                </strong>
-            </li>
-            <li>
-                <strong>Satunnaisotos (700 otosta) valittu käyttämällä opiskelijanumeroa siemenlukuna</strong>
-            </li>
-        </ul>
+        <strong>Satunnaisotos (700 otosta) valittu käyttämällä opiskelijanumeroa siemenlukuna</strong>
+        <p>
+            <code>elinolo.sav</code> (Tilastokeskuksen elinolotutkimuksen aineisto, N=2199)
+        </p>
+        <pre>
+            <code class="language-r code">library(foreign)
+                ht1.dat <- read.spss("elinolo2020.sav", to.data.frame = TRUE)
+                attach(ht1.dat)
+                
+                set.seed(518467)
+                oma.otos1 <- ht1.dat[sample(nrow(ht1.dat), 700),]
+                attach(oma.otos1)
+            </code>
+        </pre>
+
+        <!------------------------Varianssianalyysi ----------------------------->
 
         <h3>Varianssianalyysi</h3>
-        <p>
+        <blockquote>
             Tutki, onko sukupuolella ja asumisahtaudella yhteyttä asunnon pinta-alaan.
+        </blockquote>
+        <p>
+            Käytetään kaksisuuntaista varianssianalyysiä, koska kyseessä on yksi numeerinen selitettävä muuttuja
+            ja kaksi kategorista selittävää muuttujaa.
         </p>
+        <strong>Normaalijakaumaoletus</strong>
+        <p>
+            Jaetaan aineisto sukupuolen mukaan kahteen osaan:
+        </p>
+        <pre>
+            <code class="language-r code">library(dplyr)
+                miehet.dat <- select(filter(oma.otos1, supu=="mies" ), c(supu, ahtas, pala))
+                naiset.dat <- select(filter(oma.otos1, supu=="nainen" ), c(supu, ahtas, pala))
+            </code>
+        </pre>
+        <p>
+            Tehdään Shapiro-Wilk -testit:
+        </p>
+        <pre>
+            <code class="language-r code">with(miehet.dat, tapply(pala, list(ahtas), shapiro.test))
+                with(naiset.dat, tapply(pala, list(ahtas), shapiro.test))
+            </code>
+        </pre>
+        <p>
+            Testien tulosten perusteella kaikkien luokkien p-arvot eivät ylitä rajaa 0,5, joten
+            normaalijakaumaoletus
+            ei ole voimassa. Parametrista testiä voidaan kuitenkin käyttää havaintojen suuresta määrästä
+            johtuen.
+            Myöskin havainnoista luotujen laatikko-jana-kuvioiden perusteella ne ovat normaalisti jakautuneita.
+        </p>
+        <p>Tehdään kaksisuuntainen varianssianalyysi:</p>
+        <pre>
+            <code class="language-r code">attach(oma.otos1)
+                library(car)
+                leveneTest(pala~supu*ahtas)
+            </code>
+        </pre>
+        <p>
+            Kaksisuuntaisen varianssianalyysin perusteella sekä sukupuoli, että asumisahtaus ovat
+            tilastollisesti
+            merkitseviä selittäjiä, sillä niiden F-testin p-arvot ovat alle
+            0,001. Sen sijaan niiden yhdysvaikutuksen F-testin p-arvo on yli 0,001 eikä siksi ole
+            tilastollisesti
+            merkitsevä selittäjä.
+        </p>
+
+        <!------------------------ Regressiomalli ----------------------------->
 
         <h3>Regressiomalli</h3>
-        <p>
+        <blockquote>
             Tutki, onko kotitalouden kuluttajayksiköiden lukumäärällä, asumismenoilla yhteensä ja
             alueella asumisajalla yhteyttä asunnon pinta-alaan.
+        </blockquote>
+        <p>
+            Tehdään regressioanalyysi, jossa selittäjinä ovat kotitalouden kuluttajayksiköiden lukumäärä,
+            asumismenot ja
+            alueella asumisaika sekä selitettävänä asunnon pinta-ala.
+        </p>
+        <p>
+            Tehdään sirontakuviot:
+        </p>
+        <pre>
+            <code class="language-r code"># sirontakuvio, kotitalouden kuluttajayksiköiden lukumäärä
+                plot(rkyks, pala)
+                abline(lm(pala~rkyks))
+                
+                # sirontakuvio, asumismenot
+                plot(asmenot, pala)
+                abline(lm(pala~asmenot))
+                
+                # sirontakuvio, asumismenot
+                plot(alaika, pala)
+                abline(lm(pala~alaika))
+            </code>
+        </pre>
+        <p>
+            Sirontakuvioista päätellen kotitalouden kuluttajayksiköiden lukumäärän, asumismenojen ja alueella
+            asumisajan
+            kasvaessa asunnon pinta-alakin kasvaa.
+        </p>
+        <p>
+            Lasketaan Pearsonin ja Spearmanin korrelaatiokertoimet:
+        </p>
+        <pre>
+            <code class="language-r code">cor.test(rkyks, pala, method="pearson")
+                cor.test(rkyks, pala, method="spearman", exact=FALSE)
+                cor.test(asmenot, pala, method="pearson")
+                cor.test(asmenot, pala, method="spearman", exact=FALSE)
+                cor.test(alaika, pala, method="pearson")
+                cor.test(alaika, pala, method="spearman", exact=FALSE)
+            </code>
+        </pre>
+        <p>
+            Pearsonin korrelaatiokerroin kotitalouden kuluttajayksiköiden lukumäärän ja asunnon pinta-alalle on
+            n.
+            0,480, joka osoittaa merkittävää suoraviivaista riippuvaisuutta. Spearmanin kerroin on vastaavasti
+            n. 0,555,
+            joka myös osoittaa merkittävää suoraviivaista riippuvuutta.
+        </p>
+        <p>
+            Pearsonin korrelaatiokerroin asumismenojen ja asunnon pinta-alalle on n. 0,088 ja Spearmanin kerroin
+            on
+            vastaavasti n. 0,029. Yhteyksiä näiden muuttujien välillä ei voida pitää suoraviivaisina.
+        </p>
+        <p>
+            Pearsonin korrelaatiokerroin alueella asumisajan ja asunnon pinta-alalle on n. 0,107 ja Spearmanin
+            kerroin
+            on vastaavasti n. 0,200. Yhteydet näiden muuttujien välillä ovat suoraviivaisia.
+        </p>
+        <p>
+            Kolmen selittäjän regressiomalli:
+        </p>
+        <pre>
+            <code class="language-r code">lm.pala <- lm(pala~rkyks+asmenot+alaika)
+                summary(lm.pala)
+            </code>
+        </pre>
+        <p>
+            Mallin regressioyhtälöksi saadaan 19,29 + 25,64 &sdot; kotitalouden kuluttajayksiköiden lukumäärä +
+            0,00047
+            &sdot; asumismenot+ 0,34 &sdot; alueella asumisaika = asunnon pinta-ala.
         </p>
 
+        <!------------------------ Toistomittausmalli ----------------------------->
+
         <h3>Toistomittausmalli</h3>
-        <ul class="unstyled">
-            <li>
-                <strong>
-                    <code>Toistomittausaineisto2020.sav</code> (7 maasta kerätty aineisto potilaan ohjauksesta, N=1299)
-                </strong>
-            </li>
-            <li>
-                <strong>Satunnaisotos (600 otosta) valittu käyttämällä opiskelijanumeroa siemenlukuna</strong>
-            </li>
-        </ul>
+        <strong>Satunnaisotos (600 otosta) valittu käyttämällä opiskelijanumeroa siemenlukuna</strong>
+        <p>
+            <code>Toistomittausaineisto2020.sav</code> (7 maasta kerätty aineisto potilaan ohjauksesta,
+            N=1299)
+        </p>
+        <pre>
+            <code class="language-r code">koodia koodia ....
+            </code>
+        </pre>
         <p>
             <i>
                 Tutkijalla on hypoteesi, että potilaan mielestä saatu ohjaus leikkauksen jälkeen
                 toiminnallista seikoista (<code>Functional_M2</code>) on ollut vähäisempää kuin odotettu ennen
-                leikkausta (<code>Functional_M1</code>). Eli keskiarvo toisessa mittauksessa on matalampi. Lisäksi
+                leikkausta (<code>Functional_M1</code>). Eli keskiarvo toisessa mittauksessa on matalampi.
+                Lisäksi
                 kiinnostaa se, onko tuo ero mittausten välillä erilainen sukupuolittain.
             </i>
         </p>
 
-        <p>
+        <blockquote>
             Tutki saavatko nämä tutkimushypoteesit tukea mallittamalla aineisto toistettujen mittausten
             varianssianalyysillä.
-        </p>
+        </blockquote>
 
         <i>
             Huom. Numeeristen vastemuuttujien mallituksessa on varianssianalyysien
@@ -95,27 +221,31 @@
         <!-- ################## Kategoristen vastemuuttujien mallitus ############################## -->
 
         <h2>Kategoristen vastemuuttujien mallitus</h2>
-        <ul class="unstyled">
-            <li>
-                <strong><code>EK2011.sav</code> (eduskuntavaaliaineisto vuodelta 2011, N=1318)</strong>
-            </li>
-            <li>
-                <strong>Satunnaisotos (900 otosta) valittu käyttämällä opiskelijanumeroa siemenlukuna</strong>
-            </li>
-        </ul>
+        <strong>Satunnaisotos (900 otosta) valittu käyttämällä opiskelijanumeroa siemenlukuna</strong>
+        <p>
+            <code>EK2011.sav</code> (eduskuntavaaliaineisto vuodelta 2011, N=1318)
+        </p>
+        <pre>
+            <code class="language-r code">koodia koodia ....
+            </code>
+        </pre>
+
+        <!------------------------ Muuttujien riippuvuusrakenne ----------------------------->
 
         <h3>Muuttujien riippuvuusrakenne</h3>
         <ol>
             <li>
                 <p>
-                    Tarkastellaan muuttujia sukupuoli (<code>d2</code>), työttömyys viimeisen 12 kuukauden aikana
-                    (<code>k32</code>) ja oman sukupuolen 2011 eduskuntavaaleissa äänestäminen (<code>k23</code>). Tee
+                    Tarkastellaan muuttujia sukupuoli (<code>d2</code>), työttömyys viimeisen 12 kuukauden
+                    aikana
+                    (<code>k32</code>) ja oman sukupuolen 2011 eduskuntavaaleissa äänestäminen
+                    (<code>k23</code>). Tee
                     ensin
                     yksiulotteiset frekvenssijakaumat ja kolmen muuttujan ristiintaulu.
                 </p>
-                <p>
+                <blockquote>
                     Onko 3-ulotteisessa ristiintaulussa nollasoluja?
-                </p>
+                </blockquote>
             </li>
 
             <li>
@@ -124,22 +254,22 @@
                     mukaan muuttujista vain ne luokat, joissa havaintoja on yli 10.
                 </p>
 
-                <p>
+                <blockquote>
                     Millaiset riippuvuudet muuttujien välillä askeltavan menetelmän avulla valittuun malliin
                     jäivät?
-                </p>
+                </blockquote>
 
-                <p>
+                <blockquote>
                     Mikä on mallin generoiva luokka?
-                </p>
+                </blockquote>
 
-                <p>
+                <blockquote>
                     Mikä on mallin yhteensopivuustestin p-arvo?
-                </p>
+                </blockquote>
 
-                <p>
+                <blockquote>
                     Mikä on standardoitujen jäännösten vaihteluväli?
-                </p>
+                </blockquote>
             </li>
 
             <li>
@@ -150,41 +280,46 @@
             </li>
         </ol>
 
+        <!------------------------ Kaksiluokkainen selitettävä muuttuja ----------------------------->
+
         <h3>Kaksiluokkainen selitettävä muuttuja</h3>
         <ol>
             <li>
                 <p>
-                    Tutki muuttujien sukupuoli (<code>d2</code>) ja ikä yhteyttä työttömyyteen viimeisen 12 kuukauden
+                    Tutki muuttujien sukupuoli (<code>d2</code>) ja ikä yhteyttä työttömyyteen viimeisen 12
+                    kuukauden
                     aikana (<code>k32</code>) käyttämällä logistista regressiomallia.
                 </p>
             </li>
 
             <li>
-                <p>
+                <blockquote>
                     Mitkä muuttujat selittävät työttömyyttä ?
-                </p>
+                </blockquote>
 
-                <p>
+                <blockquote>
                     Tulkitse yhteydet OR:ien avulla. Raportoi myös luottamusvälit OR:ille
-                </p>
+                </blockquote>
 
-                <p>
+                <blockquote>
                     Mikä on mallin <i>Nagelkerke</i> selitysaste ?
-                </p>
+                </blockquote>
             </li>
         </ol>
 
         <!-- ################## Monimuuttujamenetelmät ############################## -->
 
         <h2>Monimuuttujamenetelmät</h2>
-        <ul class="unstyled">
-            <li>
-                <strong><code>pankkiotos2020.sav</code> (todellinen asiakasaineisto, N=2453)</strong>
-            </li>
-            <li>
-                <strong>Satunnaisotos (1500 otosta) valittu käyttämällä opiskelijanumeroa siemenlukuna</strong>
-            </li>
-        </ul>
+        <strong>Satunnaisotos (1500 otosta) valittu käyttämällä opiskelijanumeroa siemenlukuna</strong>
+        <p>
+            <code>pankkiotos2020.sav</code> (todellinen asiakasaineisto, N=2453)
+        </p>
+        <pre>
+            <code class="language-r code">koodia koodia ....
+            </code>
+        </pre>
+
+        <!------------------------ Muuttujien ryhmittely ----------------------------->
 
         <h3>Muuttujien ryhmittely</h3>
         <ol>
@@ -210,6 +345,8 @@
             </li>
         </ol>
 
+        <!------------------------ Havaintojen ryhmittely ----------------------------->
+
         <h4>Havaintojen ryhmittely</h4>
         <ol start="4">
             <li>
@@ -222,6 +359,9 @@
         </ol>
 
     </main>
+    <script>
+        hljs.highlightAll();
+    </script>
 </body>
 
 </html>
