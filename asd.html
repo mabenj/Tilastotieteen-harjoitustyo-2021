@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <main class="container">
+        <h1 class="nocount">Tilastotieteen harjoitustyö 2021</h1>
+        <strong>TILM3558</strong>
+        <ul class="unstyled">
+            <li>
+                Marko Järvinen
+            </li>
+            <li>
+                518467
+            </li>
+            <li>
+                mabeja@utu.fi
+            </li>
+        </ul>
+
+        <!-- ################## Numeeristen vastemuuttujien mallitus ############################## -->
+
+        <h2>Numeeristen vastemuuttujien mallitus</h2>
+        <strong>Satunnaisotos (700 otosta) valittu käyttämällä opiskelijanumeroa siemenlukuna</strong>
+        <p>
+            <code>elinolo.sav</code> (Tilastokeskuksen elinolotutkimuksen aineisto, N=2199)
+        </p>
+        <pre>
+            <code class="language-r code">library(foreign)
+                ht1.dat <- read.spss("elinolo2020.sav", to.data.frame = TRUE)<br>
+                attach(ht1.dat)<br>
+                
+                set.seed(518467)<br>
+                oma.otos1 <- ht1.dat[sample(nrow(ht1.dat), 700),]<br>
+                attach(oma.otos1)<br>
+            </code>
+        </pre>
+        <a href=""></a>
+    </main>
+</body>
+
+</html>

@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tilastotieteen harjoitustyö 2021</title>
     <link rel="stylesheet" href="./styles.css">
-    <link rel="stylesheet" href="http://philarcher.org/css/numberheadings.css">
+    <!-- TODO: cross origin??-->
+    <link rel="stylesheet" href="https://philarcher.org/css/numberheadings.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,13 +48,13 @@
             <code>elinolo.sav</code> (Tilastokeskuksen elinolotutkimuksen aineisto, N=2199)
         </p>
         <pre>
-            <code class="language-r code">library(foreign)
-                ht1.dat <- read.spss("elinolo2020.sav", to.data.frame = TRUE)
-                attach(ht1.dat)
+            <code class="language-r code">library(foreign)<br>
+                ht1.dat <- read.spss("elinolo2020.sav", to.data.frame = TRUE)<br>
+                attach(ht1.dat)<br>
                 
-                set.seed(518467)
-                oma.otos1 <- ht1.dat[sample(nrow(ht1.dat), 700),]
-                attach(oma.otos1)
+                set.seed(518467)<br>
+                oma.otos1 <- ht1.dat[sample(nrow(ht1.dat), 700),]<br>
+                attach(oma.otos1)<br>
             </code>
         </pre>
 
@@ -72,17 +73,17 @@
             Jaetaan aineisto sukupuolen mukaan kahteen osaan:
         </p>
         <pre>
-            <code class="language-r code">library(dplyr)
-                miehet.dat <- select(filter(oma.otos1, supu=="mies" ), c(supu, ahtas, pala))
-                naiset.dat <- select(filter(oma.otos1, supu=="nainen" ), c(supu, ahtas, pala))
+            <code class="language-r code">library(dplyr)<br>
+                miehet.dat <- select(filter(oma.otos1, supu=="mies" ), c(supu, ahtas, pala))<br>
+                naiset.dat <- select(filter(oma.otos1, supu=="nainen" ), c(supu, ahtas, pala))<br>
             </code>
         </pre>
         <p>
             Tehdään Shapiro-Wilk -testit:
         </p>
         <pre>
-            <code class="language-r code">with(miehet.dat, tapply(pala, list(ahtas), shapiro.test))
-                with(naiset.dat, tapply(pala, list(ahtas), shapiro.test))
+            <code class="language-r code">with(miehet.dat, tapply(pala, list(ahtas), shapiro.test))<br>
+                with(naiset.dat, tapply(pala, list(ahtas), shapiro.test))<br>
             </code>
         </pre>
         <p>
@@ -94,9 +95,9 @@
         </p>
         <p>Tehdään kaksisuuntainen varianssianalyysi:</p>
         <pre>
-            <code class="language-r code">attach(oma.otos1)
-                library(car)
-                leveneTest(pala~supu*ahtas)
+            <code class="language-r code">attach(oma.otos1)<br>
+                library(car)<br>
+                leveneTest(pala~supu*ahtas)<br>
             </code>
         </pre>
         <p>
@@ -124,17 +125,17 @@
             Tehdään sirontakuviot:
         </p>
         <pre>
-            <code class="language-r code"># sirontakuvio, kotitalouden kuluttajayksiköiden lukumäärä
-                plot(rkyks, pala)
-                abline(lm(pala~rkyks))
+            <code class="language-r code"># sirontakuvio, kotitalouden kuluttajayksiköiden lukumäärä<br>
+                plot(rkyks, pala)<br>
+                abline(lm(pala~rkyks))<br>
                 
-                # sirontakuvio, asumismenot
-                plot(asmenot, pala)
-                abline(lm(pala~asmenot))
+                # sirontakuvio, asumismenot<br>
+                plot(asmenot, pala)<br>
+                abline(lm(pala~asmenot))<br>
                 
-                # sirontakuvio, asumismenot
-                plot(alaika, pala)
-                abline(lm(pala~alaika))
+                # sirontakuvio, asumismenot<br>
+                plot(alaika, pala)<br>
+                abline(lm(pala~alaika))<br>
             </code>
         </pre>
         <p>
@@ -146,12 +147,12 @@
             Lasketaan Pearsonin ja Spearmanin korrelaatiokertoimet:
         </p>
         <pre>
-            <code class="language-r code">cor.test(rkyks, pala, method="pearson")
-                cor.test(rkyks, pala, method="spearman", exact=FALSE)
-                cor.test(asmenot, pala, method="pearson")
-                cor.test(asmenot, pala, method="spearman", exact=FALSE)
-                cor.test(alaika, pala, method="pearson")
-                cor.test(alaika, pala, method="spearman", exact=FALSE)
+            <code class="language-r code">cor.test(rkyks, pala, method="pearson")<br>
+                cor.test(rkyks, pala, method="spearman", exact=FALSE)<br>
+                cor.test(asmenot, pala, method="pearson")<br>
+                cor.test(asmenot, pala, method="spearman", exact=FALSE)<br>
+                cor.test(alaika, pala, method="pearson")<br>
+                cor.test(alaika, pala, method="spearman", exact=FALSE)<br>
             </code>
         </pre>
         <p>
@@ -175,8 +176,8 @@
             Kolmen selittäjän regressiomalli:
         </p>
         <pre>
-            <code class="language-r code">lm.pala <- lm(pala~rkyks+asmenot+alaika)
-                summary(lm.pala)
+            <code class="language-r code">lm.pala <- lm(pala~rkyks+asmenot+alaika)<br>
+                summary(lm.pala)<br>
             </code>
         </pre>
         <p>
@@ -194,7 +195,7 @@
             N=1299)
         </p>
         <pre>
-            <code class="language-r code">koodia koodia ....
+            <code class="language-r code">koodia koodia ....<br>
             </code>
         </pre>
         <p>
@@ -226,7 +227,7 @@
             <code>EK2011.sav</code> (eduskuntavaaliaineisto vuodelta 2011, N=1318)
         </p>
         <pre>
-            <code class="language-r code">koodia koodia ....
+            <code class="language-r code">koodia koodia ....<br>
             </code>
         </pre>
 
@@ -315,7 +316,7 @@
             <code>pankkiotos2020.sav</code> (todellinen asiakasaineisto, N=2453)
         </p>
         <pre>
-            <code class="language-r code">koodia koodia ....
+            <code class="language-r code">koodia koodia ....<br>
             </code>
         </pre>
 
