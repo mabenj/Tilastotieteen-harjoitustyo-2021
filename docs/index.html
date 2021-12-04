@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tilastotieteen harjoitustyö 2021</title>
     <link rel="stylesheet" href="./styles.css">
-    <!-- TODO: cross origin??-->
     <link rel="stylesheet" href="https://philarcher.org/css/numberheadings.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,7 +24,6 @@
 
 <body>
     <main class="container">
-
         <h1 class="nocount">Tilastotieteen harjoitustyö 2021</h1>
         <strong>TILM3558</strong>
         <ul class="unstyled">
@@ -39,11 +37,11 @@
                 mabeja@utu.fi
             </li>
         </ul>
-
         <!-- ################## Numeeristen vastemuuttujien mallitus ############################## -->
 
         <h2>Numeeristen vastemuuttujien mallitus</h2>
         <strong>Satunnaisotos (700 otosta) valittu käyttämällä opiskelijanumeroa siemenlukuna</strong>
+
         <p>
             <code>elinolo.sav</code> (Tilastokeskuksen elinolotutkimuksen aineisto, N=2199)
         </p>
@@ -195,7 +193,13 @@
             N=1299)
         </p>
         <pre>
-            <code class="language-r code">koodia koodia ....<br>
+            <code class="language-r code">library(foreign)<br>    
+                ht2.dat<-read.spss("Toistomittausaineisto2020.sav", to.data.frame=TRUE)<br>
+                attach(ht2.dat)<br>
+                
+                set.seed(518467)<br>
+                oma.otos2<-ht2.dat[sample(nrow(ht2.dat), 600), ]<br>
+                attach(oma.otos2)<br>
             </code>
         </pre>
         <p>
@@ -213,11 +217,117 @@
             varianssianalyysillä.
         </blockquote>
 
-        <i>
+        <strong>
+            Molemmat sukupuolet
+        </strong>
+        <p>
+            Suoritetaan toistettujen mittausten varianssianalyysi. Tarkistetaan ensin onko normaalijakaumaoletus
+            voimassa Shapiro-Wilk -testeillä:
+        </p>
+        <pre>
+            <code class="language-r code">shapiro.test(Functional_M2)<br>
+                shapiro.test(Functional_M1)<br>
+            </code>
+        </pre>
+        <p>
+            Sekä <code>Functional_M2</code>:n ja <code>Functional_M1</code>:n p-arvot ovat alle 0,001. Tästä voidaan
+            todeta, että normaalijakaumaoletus ei ole voimassa.
+        </p>
+        <p>
+            Koska normaalijakaumaoletus ei ole voimassa, käytetään epäparametrista testiä.
+        </p>
+        <p>
+            Järjestetään havainnot Friedmanin testiä varten:
+        </p>
+        <pre>
+            <code class="language-r code">library(dplyr)<br>
+                filtered_data <- na.omit(select(oma.otos2, patient, Functional_M1, Functional_M2, D2))<br>
+                filtered_data <- with(filtered_data, filtered_data[order(patient), ])<br>
+                filtered_data <- filtered_data[!duplicated(filtered_data$patient), ]<br>
+                <br>
+                M1_patient <- list(select(filtered_data, patient))<br>
+                M1_value <- list(select(filtered_data, Functional_M1))<br>
+                M1_Sex <- list(select(filtered_data, D2))<br>
+                M1 <- do.call(rbind.data.frame, Map('c', M1_patient, M1_value, M1_Sex))<br>
+                M1['Functional'] = 'M1'<br>
+                names(M1)[names(M1) == 'Functional_M1'] <- 'Functional_Value'<br>
+                <br>
+                M2_patient <- list(select(filtered_data, patient))<br>
+                M2_value <- list(select(filtered_data, Functional_M2))<br>
+                M2_Sex <- list(select(filtered_data, D2))<br>
+                M2 <- do.call(rbind.data.frame, Map('c', M2_patient, M2_value, M2_Sex))<br>
+                M2['Functional'] = 'M2'<br>
+                names(M2)[names(M2) == 'Functional_M2'] <- 'Functional_Value'<br>
+                <br>
+                data <- rbind(M1, M2)<br>
+            </code>
+        </pre>
+        <p>
+            Tehdään Friedmanin testi:
+        </p>
+        <pre>
+            <code class="language-r code">attach(data)<br>
+                friedman.test(Functional_Value ~ Functional | patient, data=data)<br>
+                detach(data)<br>
+            </code>
+        </pre>
+        <p>
+            Friedmanin testin p-arvo on alle 0,001, joten muuttujien välillä on
+            tilastollisesti merkitseviä eroja. Tehdään muuttujien välinen vertailu Wilcoxonin testillä:
+        </p>
+        <pre>
+            <code class="language-r code">attach(oma.otos2)<br>
+                wilcox.test(Functional_M1, Functional_M2, paired = TRUE)<br>
+            </code>
+        </pre>
+        <p>
+            Testin tuloksen mukaan muuttujien välinen ero on tilastollisesti merkitsevä, sillä
+            testin p-arvo on alle 0,001.
+        </p>
+
+        <strong>
+            Sukupuolet erikseen
+        </strong>
+        <div style="background-color: pink; color: rgb(255, 30, 30); padding: 10px;">
+
+            <p>
+                Tehdään normaalijakaumatestit:
+            </p>
+            <pre>
+                <code class="language-r code">with(oma.otos2, tapply(Functional_M1, D2, shapiro.test))<br>
+                    with(oma.otos2, tapply(Functional_M2, D2, shapiro.test))<br>
+                </code>
+            </pre>
+            <p>
+                Molempien testien tapauksessa p-arvo on alle 0,001, joten niiden normaalius ei toteudu.
+            </p>
+
+        </div>
+
+        <p>
+            Tehdään toistettujen mittausten varianssianalyysi, jossa luokitteleva
+            tekijä on sukupuoli (<code>D2</code>).
+        </p>
+        <pre>
+            <code class="language-r code">attach(data)<br>
+                summary(aov(Functional_Value ~ D2 * Functional + Error(patient / Functional), data=data))<br>
+                detach(data)<br>
+            </code>
+        </pre>
+        <p>
+            Tulosteesta huomataan, että sukupuolien välillä ei ole tilastollisesti
+            merkitseviä eroja (p=0,628). Sen sijaan mittausten väliset erot ovat
+            tilastollisesti merkitseviä (p&lt;0,001). Myöskään näiden välinen yhdysvaikutus
+            ei ole tilastollisesti merkitsevää (p=0,642).
+        </p>
+
+
+
+        <!-- <i>
             Huom. Numeeristen vastemuuttujien mallituksessa on varianssianalyysien
             osalta tehtävä tarvittava kuvaileva tarkastelu ja regressiomallissa yhteyksien
             suoraviivaisuuksien tarkastelu ja jäännöstarkastelu.
-        </i>
+        </i> -->
 
         <!-- ################## Kategoristen vastemuuttujien mallitus ############################## -->
 
