@@ -203,13 +203,13 @@
             </code>
         </pre>
         <p>
-            <i>
+            <em>
                 Tutkijalla on hypoteesi, että potilaan mielestä saatu ohjaus leikkauksen jälkeen
                 toiminnallista seikoista (<code>Functional_M2</code>) on ollut vähäisempää kuin odotettu ennen
                 leikkausta (<code>Functional_M1</code>). Eli keskiarvo toisessa mittauksessa on matalampi.
                 Lisäksi
                 kiinnostaa se, onko tuo ero mittausten välillä erilainen sukupuolittain.
-            </i>
+            </em>
         </p>
 
         <blockquote>
@@ -281,14 +281,14 @@
             </code>
         </pre>
         <p>
-            Testin tuloksen mukaan muuttujien välinen ero on tilastollisesti merkitsevä, sillä
+            Testin tuloksen mukaan mittausten välinen ero on tilastollisesti merkitsevä, sillä
             testin p-arvo on alle 0,001.
         </p>
 
         <strong>
             Sukupuolet erikseen
         </strong>
-        <div style="background-color: pink; color: rgb(255, 30, 30); padding: 10px;">
+        <div class="warning">
 
             <p>
                 Tehdään normaalijakaumatestit:
@@ -323,11 +323,11 @@
 
 
 
-        <!-- <i>
+        <!-- <em>
             Huom. Numeeristen vastemuuttujien mallituksessa on varianssianalyysien
             osalta tehtävä tarvittava kuvaileva tarkastelu ja regressiomallissa yhteyksien
             suoraviivaisuuksien tarkastelu ja jäännöstarkastelu.
-        </i> -->
+        </em> -->
 
         <!-- ################## Kategoristen vastemuuttujien mallitus ############################## -->
 
@@ -337,7 +337,13 @@
             <code>EK2011.sav</code> (eduskuntavaaliaineisto vuodelta 2011, N=1318)
         </p>
         <pre>
-            <code class="language-r code">koodia koodia ....<br>
+            <code class="language-r code">library(foreign)<br>
+                ht3.dat<-read.spss("EK2011.sav", to.data.frame=TRUE)<br>
+                attach(ht3.dat)<br>
+                <br>
+                set.seed(518467)<br>
+                oma.otos3<-ht3.dat[sample(nrow(ht3.dat), 900), ]<br>
+                attach(oma.otos3)<br>
             </code>
         </pre>
 
@@ -346,47 +352,114 @@
         <h3>Muuttujien riippuvuusrakenne</h3>
         <ol>
             <li>
-                <p>
+                <strong>
                     Tarkastellaan muuttujia sukupuoli (<code>d2</code>), työttömyys viimeisen 12 kuukauden
                     aikana
-                    (<code>k32</code>) ja oman sukupuolen 2011 eduskuntavaaleissa äänestäminen
+                    (<code>d32</code>) ja oman sukupuolen 2011 eduskuntavaaleissa äänestäminen
                     (<code>k23</code>). Tee
                     ensin
                     yksiulotteiset frekvenssijakaumat ja kolmen muuttujan ristiintaulu.
-                </p>
+                </strong>
+
                 <blockquote>
                     Onko 3-ulotteisessa ristiintaulussa nollasoluja?
                 </blockquote>
+                <p>
+                    Tehdään frekvenssitaulukot:
+                </p>
+                <pre>
+                    <code class="language-r code">table(d2)<br>
+                        table(d32)<br>
+                        table(k23)<br>                    
+                    </code>
+                </pre>
+                <p>
+                    Huomataan, että puuttuvia arvoja ovat:
+                    <ul>
+                        <li>sukupuoli (<code>d2</code>): 15 arvoa</li>
+                        <li>työttömyys viimeisen 12 kuukauden aikana (<code>d32</code>): 5 arvoa arvoa</li>
+                        <li>oman sukupuolen 2011 eduskuntavaaleissa äänestäminen (<code>k23</code>): 141 arvoa</li>
+                    </ul>
+                </p>
+                <p>
+                    Kolmen muuttujan ristiintaulu:
+                </p>
+                <pre>
+                    <code class="language-r code">ftable(table(d2, d32, k23))<br>                    
+                    </code>
+                </pre>
+                <p>
+                    Ristiintaulussa ei ole nollasoluja. Pienin solufrekvenssi on 17.
+                </p>
+
             </li>
 
             <li>
-                <p>
+                <strong>
                     Tarkastele kolmen muuttujan välisiä riippuvuuksia loglineaaristen mallien avulla. Ota
                     mukaan muuttujista vain ne luokat, joissa havaintoja on yli 10.
+                </strong>
+
+                <p>
+                    Loglineaarinen mallitus:
                 </p>
+                <pre>
+                    <code class="language-r code">library(MASS)<br>
+                        mytable <- xtabs(~ d2 + d32 + k23, data=oma.otos3)<br>    
+                        loglm(~ d2 + k23 + d32 + d2*k23+d32, mytable)<br>                
+                    </code>
+                </pre>
 
                 <blockquote>
                     Millaiset riippuvuudet muuttujien välillä askeltavan menetelmän avulla valittuun malliin
                     jäivät?
                 </blockquote>
+                <p>
+                    Sukupuoli ja oman sukupuolen äänestäminen (<code>d2</code> ja <code>k23</code>) jäivät
+                    riippuvaisiksi.
+                </p>
 
                 <blockquote>
                     Mikä on mallin generoiva luokka?
                 </blockquote>
+                <p>
+                    Mallin generoiva luokka on { <code>d2</code> * <code>k23</code> + <code>d32</code> }.
+                </p>
 
                 <blockquote>
                     Mikä on mallin yhteensopivuustestin p-arvo?
                 </blockquote>
+                <p>
+                    Mallin yhteensopivuustestin p-arvo on n. 0,067.
+                </p>
 
                 <blockquote>
                     Mikä on standardoitujen jäännösten vaihteluväli?
                 </blockquote>
+                <p class="warning">
+                    emt
+                </p>
             </li>
 
             <li>
-                <p>
+                <strong>
                     Tee mallin mukainen yhteyksien jatkotarkastelu ristiintauluin ja tulkitse malli
                     riviprosenttien avulla.
+                </strong>
+                <p>
+                    Tehdään jatkotarkastelu ristiintauluin:
+                </p>
+                <pre>
+                    <code class="language-r code">taulu1 <- table(d2, k23)<br>
+                        prop.table(taulu1, 1)<br>
+                        taulu2 <- table(d32, k23)<br>
+                        prop.table(taulu2, 1)<br>       
+                    </code>
+                </pre>
+                <p>
+                    Huomataan, että miehet äänestävät omaa sukupuoltaan useammin kuin naiset. Huomataan myöskin, että
+                    viimeisen 12 kk:n aikana työttömänä olleet äänestävät omaa sukupuoltaan harvemmin kuin ne jotka
+                    eivät ole olleet työttömänä viimeisen 12 kk:n aikana.
                 </p>
             </li>
         </ol>
@@ -396,25 +469,61 @@
         <h3>Kaksiluokkainen selitettävä muuttuja</h3>
         <ol>
             <li>
-                <p>
+                <strong>
                     Tutki muuttujien sukupuoli (<code>d2</code>) ja ikä yhteyttä työttömyyteen viimeisen 12
                     kuukauden
                     aikana (<code>k32</code>) käyttämällä logistista regressiomallia.
+                </strong>
+                <p>
+                    Logistinen binäärinen regressio:
                 </p>
+                <pre>
+                    <code class="language-r code">tyottomyys <- glm(d32 ~ d1 + d2, data=oma.otos3, family=binomial)<br>
+                        summary(tyottomyys)<br>     
+                    </code>
+                </pre>
             </li>
 
             <li>
                 <blockquote>
                     Mitkä muuttujat selittävät työttömyyttä ?
                 </blockquote>
+                <p>
+                    Huomataan, että ikä on tilastollisesti merkitsevä tekijä (p &lt; 0,001).
+                    Sen sijaan sukupuoli ei ole tilastollisesti merkitsevä tekijä (p = 0,276).
+                </p>
 
                 <blockquote>
                     Tulkitse yhteydet OR:ien avulla. Raportoi myös luottamusvälit OR:ille
                 </blockquote>
+                <p>
+                    Selitetään "<em>työtön viimeisen 12 kk:n aikana</em>" kyllä/ei -suhdetta:
+                </p>
+                <pre>
+                    <code class="language-r code">exp(cbind(OR=coef(tyottomyys), confint(tyottomyys)))<br>     
+                    </code>
+                </pre>
+                <p>
+                    Muuttujan <code>d1</code> (ikä) OR on n. 1,04. Muuttuja <code>d2</code> (sukupuoli) ei ollut
+                    tilastollisesti merkitsevä tekijä, minkä vuoksi sitä ei tarkastella.
+                </p>
+                <p>
+                    OR:n 95% luottamusvälin alaraja on n. 1,03 ja yläraja puolestaan n. 3,41.
+                </p>
 
                 <blockquote>
-                    Mikä on mallin <i>Nagelkerke</i> selitysaste ?
+                    Mikä on mallin <em>Nagelkerke</em> selitysaste ?
                 </blockquote>
+                <pre>
+                    <code class="language-r code">install.packages("fmsb")<br>
+                        library(fmsb)<br>
+                        data.nagel <- NagelkerkeR2(tyottomyys)<br>
+                        data.nagel<br>
+                    </code>
+                </pre>
+                <p>
+                    Mallin <em>Nagelkerke</em> selitysaste on n. 0,092.
+                </p>
             </li>
         </ol>
 
@@ -426,7 +535,13 @@
             <code>pankkiotos2020.sav</code> (todellinen asiakasaineisto, N=2453)
         </p>
         <pre>
-            <code class="language-r code">koodia koodia ....<br>
+            <code class="language-r code">library(foreign)<br>
+                ht4.dat<-read.spss("pankkiotos2020.sav", to.data.frame=TRUE)<br>
+                attach(ht4.dat)<br>
+                <br>
+                set.seed(518467)<br>
+                oma.otos4<-ht4.dat[sample(nrow(ht4.dat), 1500), ]<br>
+                attach(oma.otos4)<br>
             </code>
         </pre>
 
@@ -435,24 +550,118 @@
         <h3>Muuttujien ryhmittely</h3>
         <ol>
             <li>
-                <p>
+                <strong>
                     Muodosta pääkomponenttianalyysilla luokitelluista muuttujista (41 kpl:
-                    <code>autom_lainan_perinta_luok -
-                        kulutusluotot1_luok</code>) pääkomponentteja ominaisarvokriteerin
+                    autom_lainan_perinta_luok - kulutusluotot1_luok) pääkomponentteja ominaisarvokriteerin
                     mukaan. (Promax-rotaatio)
+                </strong>
+                <p>
+                    Poistetaan muuttuja <code>toimeksianto_a_kpl_luok</code>, sillä
+                    sen kaikki arvot ovat 0, mikä johtaa koodia ajaessa virheeseen:
                 </p>
+                <pre>
+                    <code class="language-r code">drops <- c("toimeksianto_a_kpl_luok")<br>
+                        oma.otos5 <- oma.otos4[ , !(names(oma.otos4) %in% drops)]<br>
+                    </code>
+                </pre>
+                <p>
+                    Tehdään pääkomponenttianalyysi:
+                </p>
+                <pre>
+                    <code class="language-r code"># korrelaatiokertoimet<br>
+                        data.kor <- cor(oma.otos5, method="pearson", use="complete.obs")<br>
+                        <br>
+                        # pääkomponenttianalyysi<br>
+                        pca <- prcomp(data.kor, center=TRUE, scale=TRUE)<br>
+                        pca<br>
+                        summary(pca)<br>
+                    </code>
+                </pre>
+                <p>
+                    Nähdään että pääkomponentteja muodostui 10 kappaletta
+                    kun ominaisarvokriteeri on se että ominaisarvo on suurempi kuin 1.
+                </p>
+                <p>
+                    Promax-rotaatio:
+                </p>
+                <pre>
+                    <code class="language-r code">pca.chosen <- pca$rotation &#91;, 1:10&#93;<br>
+                        pca.promax <- promax(pca.chosen)<br>
+                        pca.promax<br>
+                    </code>
+                </pre>
             </li>
 
             <li>
-                <p>
+                <strong>
                     Talleta havaintomatriisiin uusiksi muuttujiksi pääkomponenttipistemäärät.
+                </strong>
+                <p>
+                    Pääkompontit tallennettiin havaintomatriisiin yllä olevalla koodikatkelmalla.
                 </p>
             </li>
 
             <li>
-                <p>
+                <strong>
                     Nimeä uudet muuttujat (pääkomponentteihin latautuneiden muuttujien mukaisesti).
-                </p>
+                </strong>
+                <ul>
+                    <li>
+                        <p>
+                            PC1: <strong>Tilin aktiivisuus</strong> - panot ja otot jokseenkin latautuneita
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            PC2: <strong>Maksupalvelu-/tiski-maksuaktiivisuus</strong> - maksupalvelu- ja tiskimaksut
+                            latautuneita
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            PC3: <strong>Rahastoaktiivisuus</strong> - rahastoihin liittyvät muuttujat latautuneita
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+
+                            PC4: <strong>Laina-aktiivisuus</strong> - lainoihin liittyvät muuttujat latautuneita
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            PC5: <strong>Luottokorttien lkm. / vakuutusaktiivisuus</strong> - sekä vakuutus-, että
+                            luottokorttien lkm. -muuttujat latautuneita
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            PC6: <strong>Osakeaktiivisuus</strong> - osakkeisiin liittyvät muuttujat latautuneita
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            PC7: <strong>Kouluttautuneisuus</strong> - korkeakoulutus-muuttuja latautunut
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            PC8: <strong>Käyttötilin velkaisuus</strong> - käyttötilin velka -muuttuja latautunut
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            PC9: <strong>Asuntolaina-/rahastoaktiivisuus</strong> - sekä asuntolaina- (b), että
+                            rahasto (a1) -muuttujat latautuneita
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            PC10: <strong>Toimeksianto/kansainväliset maksukortit</strong> - sekä toimeksianto- (b),
+                            että kv. maksukortit -muuttujat latautuneita
+                        </p>
+                    </li>
+                </ul>
             </li>
         </ol>
 
@@ -461,11 +670,11 @@
         <h4>Havaintojen ryhmittely</h4>
         <ol start="4">
             <li>
-                <p>
+                <strong>
                     Käytä näitä uusia muuttujia klusterianalyysissä, jossa muodostat asiakasryhmiä K-means
                     menetelmällä lähtien kahdesta klusterista viiteen tai kuuteen klusteriin saakka. Kuvaile
                     muodostamiasi ryhmiä.
-                </p>
+                </strong>
             </li>
         </ol>
 

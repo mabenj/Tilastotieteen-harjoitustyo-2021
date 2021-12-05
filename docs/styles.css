@@ -32,3 +32,9 @@ blockquote {
 code.code {
 	white-space: pre-line;
 }
+
+.warning {
+	background-color: pink;
+	color: rgb(255, 30, 30);
+	padding: 10px;
+}
