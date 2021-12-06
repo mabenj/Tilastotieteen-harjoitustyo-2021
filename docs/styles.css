@@ -23,8 +23,8 @@ blockquote {
 
 .container {
 	width: 700px;
-	padding-right: 15px;
-	padding-left: 15px;
+	/* padding-right: 15px; */
+	/* padding-left: 15px; */
 	margin-right: auto;
 	margin-left: auto;
 	/* background-color: pink; */
@@ -38,6 +38,7 @@ code.code {
 	background-color: pink;
 	color: rgb(255, 30, 30);
 	padding: 10px;
+	display: none;
 }
 
 td,
