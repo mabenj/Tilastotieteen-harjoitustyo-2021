@@ -46,7 +46,7 @@ abline(lm(pala~rkyks))
 plot(asmenot, pala)
 abline(lm(pala~asmenot))
 
-# sirontakuvio, asumismenot
+# sirontakuvio, alueella asumisaika
 plot(alaika, pala)
 abline(lm(pala~alaika))
 
@@ -82,19 +82,21 @@ shapiro.test(Functional_M1)
 
 # luodaan sopivan muotoinen data
 library(dplyr)
-filtered_data <- na.omit(select(oma.otos2, patient, Functional_M1, Functional_M2))
+filtered_data <- na.omit(select(oma.otos2, patient, Functional_M1, Functional_M2, D2))
 filtered_data <- with(filtered_data, filtered_data[order(patient), ])
 filtered_data <- filtered_data[!duplicated(filtered_data$patient), ]
 
 M1_patient <- list(select(filtered_data, patient))
 M1_value <- list(select(filtered_data, Functional_M1))
-M1 <- do.call(rbind.data.frame, Map('c', M1_patient, M1_value))
+M1_Sex <- list(select(filtered_data, D2))
+M1 <- do.call(rbind.data.frame, Map('c', M1_patient, M1_value, M1_Sex))
 M1['Functional'] = 'M1'
 names(M1)[names(M1) == 'Functional_M1'] <- 'Functional_Value'
 
 M2_patient <- list(select(filtered_data, patient))
 M2_value <- list(select(filtered_data, Functional_M2))
-M2 <- do.call(rbind.data.frame, Map('c', M2_patient, M2_value))
+M2_Sex <- list(select(filtered_data, D2))
+M2 <- do.call(rbind.data.frame, Map('c', M2_patient, M2_value, M2_Sex))
 M2['Functional'] = 'M2'
 names(M2)[names(M2) == 'Functional_M2'] <- 'Functional_Value'
 
@@ -109,7 +111,14 @@ detach(data)
 attach(oma.otos2)
 wilcox.test(Functional_M1, Functional_M2, paired = TRUE)
 
-at2<-read.spss("toistetut mittaukset alekkain 2015r.sav", to.data.frame=TRUE)
-attach(at2)
-detach(at2)
 
+# sukupuolet erikseen
+
+# normaalijakaumatestit
+with(oma.otos2, tapply(Functional_M1, D2, shapiro.test))
+with(oma.otos2, tapply(Functional_M2, D2, shapiro.test))
+
+# toistettujen mittausten varianssianalyysi
+attach(data)
+summary(aov(Functional_Value ~ D2 * Functional + Error(patient / Functional), data=data))
+detach(data)
