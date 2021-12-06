@@ -95,7 +95,7 @@
         <pre>
             <code class="language-r code">attach(oma.otos1)<br>
                 library(car)<br>
-                leveneTest(pala~supu*ahtas)<br>
+                anova(lm(pala~supu*ahtas))<br>
             </code>
         </pre>
         <p>
@@ -131,7 +131,7 @@
                 plot(asmenot, pala)<br>
                 abline(lm(pala~asmenot))<br>
                 
-                # sirontakuvio, asumismenot<br>
+                # sirontakuvio, alueella asumisaika<br>
                 plot(alaika, pala)<br>
                 abline(lm(pala~alaika))<br>
             </code>
@@ -154,21 +154,23 @@
             </code>
         </pre>
         <p>
-            Pearsonin korrelaatiokerroin kotitalouden kuluttajayksiköiden lukumäärän ja asunnon pinta-alalle on
-            n.
-            0,480, joka osoittaa merkittävää suoraviivaista riippuvaisuutta. Spearmanin kerroin on vastaavasti
-            n. 0,555,
+            Pearsonin korrelaatiokerroin kotitalouden kuluttajayksiköiden lukumäärän ja
+            asunnon pinta-alalle on n.
+            0,534, joka osoittaa merkittävää suoraviivaista riippuvaisuutta. Spearmanin kerroin on vastaavasti
+            n. 0,588,
             joka myös osoittaa merkittävää suoraviivaista riippuvuutta.
         </p>
         <p>
-            Pearsonin korrelaatiokerroin asumismenojen ja asunnon pinta-alalle on n. 0,088 ja Spearmanin kerroin
+            Pearsonin korrelaatiokerroin asumismenojen ja asunnon pinta-alalle on
+            n. 0,118 ja Spearmanin kerroin
             on
-            vastaavasti n. 0,029. Yhteyksiä näiden muuttujien välillä ei voida pitää suoraviivaisina.
+            vastaavasti n. 0,072. Yhteyksiä näiden muuttujien välillä ei voida pitää suoraviivaisina.
         </p>
         <p>
-            Pearsonin korrelaatiokerroin alueella asumisajan ja asunnon pinta-alalle on n. 0,107 ja Spearmanin
+            Pearsonin korrelaatiokerroin alueella asumisajan ja asunnon pinta-alalle on
+            n. 0,125 ja Spearmanin
             kerroin
-            on vastaavasti n. 0,200. Yhteydet näiden muuttujien välillä ovat suoraviivaisia.
+            on vastaavasti n. 0,203. Yhteydet näiden muuttujien välillä ovat suoraviivaisia.
         </p>
         <p>
             Kolmen selittäjän regressiomalli:
@@ -179,9 +181,9 @@
             </code>
         </pre>
         <p>
-            Mallin regressioyhtälöksi saadaan 19,29 + 25,64 &sdot; kotitalouden kuluttajayksiköiden lukumäärä +
-            0,00047
-            &sdot; asumismenot+ 0,34 &sdot; alueella asumisaika = asunnon pinta-ala.
+            Mallin regressioyhtälöksi saadaan 15,06 + 26,97 &sdot; kotitalouden
+            kuluttajayksiköiden lukumäärä + 0,00052
+            &sdot; asumismenot + 0,37 &sdot; alueella asumisaika = asunnon pinta-ala.
         </p>
 
         <!------------------------ Toistomittausmalli ----------------------------->
@@ -406,7 +408,8 @@
                 <pre>
                     <code class="language-r code">library(MASS)<br>
                         mytable <- xtabs(~ d2 + d32 + k23, data=oma.otos3)<br>    
-                        loglm(~ d2 + k23 + d32 + d2*k23+d32, mytable)<br>                
+                        malli <- loglm(~ d2 + k23 + d32 + d2*k23+d32, mytable)<br>  
+                        malli<br>              
                     </code>
                 </pre>
 
@@ -436,8 +439,13 @@
                 <blockquote>
                     Mikä on standardoitujen jäännösten vaihteluväli?
                 </blockquote>
-                <p class="warning">
-                    emt
+                <pre>
+                    <code class="language-r code">stdres = residuals(malli, "pearson")<br>
+                        summary(stdres)<br>                
+                    </code>
+                </pre>
+                <p>
+                    Standardoitujen jäännösten vaihteluvälin alaraja on -1,871 ja yläraja 1,493.
                 </p>
             </li>
 
@@ -573,7 +581,6 @@
                         <br>
                         # pääkomponenttianalyysi<br>
                         pca <- prcomp(data.kor, center=TRUE, scale=TRUE)<br>
-                        pca<br>
                         summary(pca)<br>
                     </code>
                 </pre>
@@ -597,7 +604,7 @@
                     Talleta havaintomatriisiin uusiksi muuttujiksi pääkomponenttipistemäärät.
                 </strong>
                 <p>
-                    Pääkompontit tallennettiin havaintomatriisiin yllä olevalla koodikatkelmalla.
+                    Pääkompontit tallennettiin yllä olevalla koodikatkelmalla.
                 </p>
             </li>
 
@@ -667,7 +674,7 @@
 
         <!------------------------ Havaintojen ryhmittely ----------------------------->
 
-        <h4>Havaintojen ryhmittely</h4>
+        <h3>Havaintojen ryhmittely</h3>
         <ol start="4">
             <li>
                 <strong>
@@ -675,6 +682,191 @@
                     menetelmällä lähtien kahdesta klusterista viiteen tai kuuteen klusteriin saakka. Kuvaile
                     muodostamiasi ryhmiä.
                 </strong>
+                <p>
+                    Tehdään klusterianalyysi:
+                </p>
+                <pre>
+                    <code class="language-r code">km = pca.chosen[,c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)]<br>
+                    </code>
+                </pre>
+                <p>
+                    Kuvaillaan muodostuneita ryhmiä:
+                </p>
+
+                <strong style="display: inline-block; margin-top: 50px;">k = 2</strong>
+                <pre>
+                    <code class="language-r code">set.seed(518467)<br>
+                        km2 = kmeans(km, 2, nstart=100)<br>
+                        km2<br>
+                    </code>
+                </pre>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Klusteri</th>
+                            <th>Havaintoja</th>
+                            <th>Profiloivat pääkomponentit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>14</td>
+                            <td>
+                                <ul>
+                                    <li>PC2 (Maksupalvelu-/tiski-maksuaktiivisuus)</li>
+                                    <li>PC3 (Rahastoaktiivisuus)</li>
+                                    <li>PC4 (Laina-aktiivisuus)</li>
+                                    <li>PC5 (Luottokorttien lkm. / vakuutusaktiivisuus)</li>
+                                    <li>PC7 (Kouluttautuneisuus)</li>
+                                    <li>PC8 (Käyttötilin velkaisuus)</li>
+                                    <li>PC9 (Asuntolaina-/rahastoaktiivisuus)</li>
+                                    <li>PC10 (Toimeksianto/kansainväliset maksukortit)</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>26</td>
+                            <td>
+                                <ul>
+                                    <li>PC1 (Tilin aktiivisuus)</li>
+                                    <li>PC6 (Osakeaktiivisuus)</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <strong style="display: inline-block; margin-top: 50px;">k = 3</strong>
+                <pre>
+                    <code class="language-r code">set.seed(518467)<br>
+                        km3 = kmeans(km, 3, nstart=100)<br>
+                        km3<br>
+                    </code>
+                </pre>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Klusteri</th>
+                            <th>Havaintoja</th>
+                            <th>Profiloivat pääkomponentit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>5</td>
+                            <td><em>Matalat arvot</em></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>8</td>
+                            <td><em>Matalat arvot</em></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>27</td>
+                            <td>
+                                <ul>
+                                    <li>PC1 (Tilin aktiivisuus)</li>
+                                    <li>PC5 (Luottokorttien lkm. / vakuutusaktiivisuus)</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <strong style="display: inline-block; margin-top: 50px;">k = 4</strong>
+                <pre>
+                    <code class="language-r code">set.seed(518467)<br>
+                        km4 = kmeans(km, 4, nstart=100)<br>
+                        km4<br>
+                    </code>
+                </pre>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Klusteri</th>
+                            <th>Havaintoja</th>
+                            <th>Profiloivat pääkomponentit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>22</td>
+                            <td>
+                                <ul>
+                                    <li>PC2 (Rahastoaktiivisuus)</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>10</td>
+                            <td><em>Matalat arvot</em></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>3</td>
+                            <td><em>Matalat arvot</em></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>5</td>
+                            <td><em>Matalat arvot</em></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <strong style="display: inline-block; margin-top: 50px;">k = 5</strong>
+                <pre>
+                    <code class="language-r code">set.seed(518467)<br>
+                        km5 = kmeans(km, 5, nstart=100)<br>
+                        km5<br>
+                    </code>
+                </pre>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Klusteri</th>
+                            <th>Havaintoja</th>
+                            <th>Profiloivat pääkomponentit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>8</td>
+                            <td><em>Matalat arvot</em></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>19</td>
+                            <td>
+                                <ul>
+                                    <li>PC1 (Tilin aktiivisuus)</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>5</td>
+                            <td><em>Matalat arvot</em></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>5</td>
+                            <td><em>Matalat arvot</em></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>3</td>
+                            <td><em>Matalat arvot</em></td>
+                        </tr>
+                    </tbody>
+                </table>
             </li>
         </ol>
 

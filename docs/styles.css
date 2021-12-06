@@ -27,6 +27,7 @@ blockquote {
 	padding-left: 15px;
 	margin-right: auto;
 	margin-left: auto;
+	/* background-color: pink; */
 }
 
 code.code {
@@ -37,4 +38,16 @@ code.code {
 	background-color: pink;
 	color: rgb(255, 30, 30);
 	padding: 10px;
+}
+
+td,
+th {
+	padding: 10px;
+}
+
+table,
+td,
+th {
+	border: 1px solid #ddd;
+	border-collapse: collapse;
 }
